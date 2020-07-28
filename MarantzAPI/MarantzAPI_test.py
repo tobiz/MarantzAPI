@@ -4,7 +4,7 @@ print ("Start")
 
 
 avr = IP( 23, 1, av_url="192.168.1.47", browser="firefox")
-
+ 
 
 print ("Power On")
 avr.write_command("PWON")

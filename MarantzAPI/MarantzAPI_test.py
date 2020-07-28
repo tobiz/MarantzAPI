@@ -18,7 +18,7 @@ avr.write_command("PSFRONT SPB")
 avr.write_command("PSFRONT?")
 avr.write_command("PSFRONT A+B")
 avr.write_command("PSFRONT?")
-  
+   
 print ("Phase 2")
 
 avr.amp_assign("ZONE2")

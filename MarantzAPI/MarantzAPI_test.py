@@ -67,7 +67,17 @@ avr.write_command("PSFRONT?")
 avr.write_command("PSFRONT SPB")
 avr.write_command("PSFRONT?")
 avr.write_command("PSFRONT A+B")
-avr.write_command("PSFRONT?")   
+avr.write_command("PSFRONT?")  
+
+print ("Phase 7")
+
+avr.amp_assign("Front B")
+avr.write_command("PSFRONT SPA")
+avr.write_command("PSFRONT?")
+avr.write_command("PSFRONT SPB")
+avr.write_command("PSFRONT?")
+avr.write_command("PSFRONT A+B")
+avr.write_command("PSFRONT?") 
 
 avr.write_command("PWSTANDBY")
 

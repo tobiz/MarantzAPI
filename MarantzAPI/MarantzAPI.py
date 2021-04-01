@@ -1,3 +1,6 @@
+#!/usr/bin/env python2.7
+
+# Working version used in MythTV plugin 20210401
 import subprocess 
 from subprocess import Popen,PIPE
 import time
@@ -30,7 +33,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
   
 class IP(): 
     def __init__(self, port, timer, av_url, browser):
-        print ("MarantzAPI with brackets")
+        #print ("MarantzAPI with brackets")
         self.script = "./nc.sh"
         self.ip = av_url
         self.port = port
@@ -73,38 +76,46 @@ class IP():
             print("message: %s" % str(msg))
      
     def netcat(self, hostname, port, content):
+        #print ("netcat: %s\n" % (content))
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #deftimeout = s.gettimeout()
+        #print "Default time out: ", deftimeout
         s.settimeout(1)
         
         try:
                 s.connect((hostname, port))
         except:
-            print "Connection failed"
+            print ("Connection failed")
             return
-        
-        s.sendall(content + "\r")
-        print "Data sent: ", content
+            
+        data = bytes(str(content + "\r").encode("utf-8"))
+        #s.sendall(content + "\r")
+        s.sendall(data)
+        #print "Data sent: ", content
         
         amount_received = 0
         amount_expected = 1024
-        i = 0
+        #amount_expected = 20
+        i = 1
         data_total = []
         while amount_received < amount_expected:
             try:
                     data = s.recv(1024).rstrip()
+                    #print "No recv error. Count: ", i 
             except socket.timeout:
-                    #print "Socket timeout"
-                    print "Data Returned is: ", data_total, " Count: ", i
+            		  #time.sleep(1)
+                    #print "Socket timeout. Data Returned is: ", data_total, " Count: ", i
                     s.close()
                     time.sleep(1)
-                    return
+                    return data_total
             i += 1
             data_total.append(data) 
             amount_received += len(data)
             #print "Data Received: ",  (new_data), " Data Total: ", data_total, " Data len rx'd: ", len(data)
-        print "Data Total is: ", data_total 
+        print ("Data Total is: ", data_total) 
         
     def write_command(self, command):
+        #print ("\nPython write_command: %s" %(command))
         rtn = self.netcat(self.ip, self.port, command)
         return rtn
     
@@ -116,13 +127,16 @@ class IP():
         # to configure the speaker configurations from the command set.  This situation is mentioned
         # in a footnote in the command set definition spreadsheet
         #
-        print "Assign Mode: ", assign_mode
+        #print "Assign Mode: ", assign_mode
         child = {'Surround Back':1, 'ZONE2':2, 'Bi-Amp':3, 'Front B':4, 'Front Height':5}
         self.element1 = "http://" + self.ip + "/SETUP/SPEAKERS/AMPASSIGN/f_speakersetup.asp"
         #print "Element1 is: ", self.element1
         self.driver = self.startBrowser(self.browser)
         #self.driver.get("http://192.168.1.47/SETUP/SPEAKERS/AMPASSIGN/f_speakersetup.asp")
-        self.driver.get(self.element1)
+        try:
+        		self.driver.get(self.element1)
+        except:
+        		print ("self.driver.get failed")
         self.driver.switch_to.frame(1)
         self.driver.find_element(By.NAME, "listAmpAssignMode").click()
         dropdown = self.driver.find_element(By.NAME, "listAmpAssignMode")
@@ -137,5 +151,6 @@ class IP():
         self.driver.find_element(By.CSS_SELECTOR, option).click()
         
         self.driver.quit()
+        
 
 
